@@ -19,7 +19,7 @@ FDE 只需求垂直传播方向的 x-y 截面。波导变长会累计相位和�
 纵向 Poynting 分量为：
 
 $$
-S_z=\frac12\operatorname{Re}(\mathbf E\times\mathbf H^*)\cdot\hat{\mathbf z}.
+S_z=\frac{1}{2}\,\Re\left[(\mathbf{E}\times\mathbf{H}^{*})\cdot\hat{\mathbf{z}}\right].
 $$
 
 M0 的功率型 EFR 为：
