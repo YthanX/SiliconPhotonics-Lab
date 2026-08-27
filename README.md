@@ -14,10 +14,13 @@
 U00–U08 是教学单元编号，并非新的研究阶段。M1/M3 只作为定义、参数来源与论文
 分支检查点穿插在主线中。
 
+进入 U00–U08 前，先阅读 F00 理论前置；F00 不占用研究阶段或教学单元编号。
+
 ## 讲义目录
 
 | 单元 | 内容 | 讲义 |
 |---|---|---|
+| F00 | 理论前置：本征模、模式阶数与 quasi-TE | [完整讲义](docs/lessons/F00_EIGENMODE_FOUNDATION.md) |
 | U00 | 项目地图与证据等级 | [完整讲义](docs/lessons/U00_PROJECT_MAP.md) |
 | U01 | M0：FDE、本征模与 Poynting EFR | [完整讲义](docs/lessons/U01_M0_FDE.md) |
 | U02 | M2：SNS 高空气场与三维泄漏 | [待整理](docs/lessons/U02_M2_SNS.md) |
