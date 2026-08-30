@@ -1,5 +1,7 @@
 # U01：M0 FDE、本征模与 Poynting EFR
 
+配套实操结果：[MODE/FDE界面、四模表与模场判读](../results/U01_MODE_FDE/README.md)。
+
 ## 核心问题
 
 给定波长、材料和截面，怎样追踪同一条 quasi-TE0 分支，并计算气体区纵向功率比例？
