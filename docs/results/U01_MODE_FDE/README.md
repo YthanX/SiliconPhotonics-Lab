@@ -602,6 +602,171 @@ W=1~\mu m,\qquad H=0.6~\mu m
 
 ---
 
+## 12.1 已有基准代码怎样从本征模算出 EFR
+
+已有M0基准实现分为两层，不应把它们混成一种语言：
+
+```text
+Python驱动程序
+  -> 通过lumapi启动MODE
+  -> 把Lumerical Script交给MODE执行
+  -> MODE建立横截面并求本征模
+  -> Python读取mode1的E和Poynting数据
+  -> 建立气体区域掩膜
+  -> 对Pz做二维积分
+  -> 输出EFR、JSON、CSV和模场图
+```
+
+- 外层`.py`负责自动化、数组处理、积分和文件输出；
+- 内层Lumerical Script负责建立结构、设置FDE并调用`findmodes`；
+- MODE中的Script File Editor主要用于查看和运行`.lsf`脚本；已有基准的主体文件则是
+  Python，内部动态生成一段Lumerical Script。
+
+### 12.1.1 内层：建立截面并求模式
+
+以下是已有实现的核心结构。`set`只是在设置几何或求解器参数，真正触发本征模计算的
+是最后的`findmodes`：
+
+```lsf
+addrect;
+set("name", "sapphire");
+set("y", -2e-6);
+set("y span", 4e-6);
+set("index", 1.67);
+
+addrect;
+set("name", "silicon");
+set("x span", 1.0e-6);
+set("y", 0.3e-6);
+set("y span", 0.6e-6);
+set("index", 3.42);
+
+addfde;
+set("solver type", 3);
+set("x span", 6e-6);
+set("y", 0.5e-6);
+set("y span", 5e-6);
+set("mesh cells x", 300);
+set("mesh cells y", 300);
+setanalysis("wavelength", 4.23e-6);
+setanalysis("number of trial modes", 4);
+
+mode_count = findmodes;
+```
+
+这里的`solver type = 3`对应当前使用的`2D Z normal`，即沿z传播、在x-y截面求解。
+
+### 12.1.2 外层：从MODE取回场数据
+
+Python通过`lumapi`让MODE执行上面的脚本，然后读取目标模式的数据：
+
+```python
+with lumapi.MODE(hide=hide) as mode:
+    mode.eval(build_script(width_m, height_m, wavelength_m))
+    poynting = mode.getresult("FDE::data::mode1", "P")
+    electric = mode.getresult("FDE::data::mode1", "E")
+```
+
+这里使用`mode1`，是因为参考截面已经通过`neff + TE fraction + 核心局域场形`确认它
+对应目标quasi-TE0；这不是“任何宽度都固定选择mode1”的理由。
+
+### 12.1.3 为什么数组最后取索引2
+
+MODE返回的`P`包含三个空间分量。波导沿z传播，所以代码取第三个分量并保留其实部：
+
+```python
+x = np.asarray(poynting["x"]).reshape(-1)
+y = np.asarray(poynting["y"]).reshape(-1)
+pz = np.real(np.asarray(poynting["P"])[:, :, 0, 0, 2])
+```
+
+其中最后的`2`表示Python从0开始计数的第三个分量，即`Pz`。它对应时间平均纵向功率
+密度：
+
+\[
+S_z=\frac{1}{2}\,\mathrm{Re}\left(E_xH_y^*-E_yH_x^*\right).
+\]
+
+### 12.1.4 怎样把“气体区域”翻译成布尔掩膜
+
+当前silicon核心占据：
+
+\[
+-0.5\le x\le0.5~\mu m,\qquad 0\le y\le0.6~\mu m.
+\]
+
+代码先标记核心，再把“sapphire上表面以上且不属于核心”的网格标为气体：
+
+```python
+xx, yy = np.meshgrid(x, y, indexing="ij")
+
+in_core = (
+    (np.abs(xx) <= width_m / 2)
+    & (yy >= 0.0)
+    & (yy <= height_m)
+)
+
+in_gas = (yy >= 0.0) & ~in_core
+```
+
+因此气体掩膜包含波导上方和左右侧壁外的区域，不包含silicon，也不包含`y < 0`的
+sapphire。若以后加入保护层、开窗或其他材料，这个掩膜必须跟着真实材料区域修改。
+
+### 12.1.5 二维积分与最终比值
+
+已有实现使用两次梯形积分：先沿y积分，再沿x积分。
+
+```python
+def integrate_xy(values, x, y):
+    return float(
+        np.trapezoid(
+            np.trapezoid(values, y, axis=1),
+            x,
+            axis=0,
+        )
+    )
+
+total_power = integrate_xy(pz, x, y)
+gas_power = integrate_xy(np.where(in_gas, pz, 0.0), x, y)
+efr = gas_power / total_power
+```
+
+`np.where(in_gas, pz, 0.0)`的含义是：气体网格保留`Pz`，其他网格置零，然后再对整个
+数组积分。
+
+已有机器基准为：
+
+\[
+P_{\mathrm{total}}=1.9868004353\times10^{-15},
+\]
+
+\[
+P_{\mathrm{gas}}=2.0325067012\times10^{-16}.
+\]
+
+所以：
+
+\[
+\mathrm{EFR}
+=\frac{P_{\mathrm{gas}}}{P_{\mathrm{total}}}
+=0.1023005\approx10.23\%.
+\]
+
+本征模的绝对幅值可以采用任意归一化，因此这两个功率写成任意单位；场整体缩放时，
+分子和分母会同时乘以相同因子，EFR比值不变。该`0.1023005`是已有机器基准，不是
+当前GUI学习模型尚未完成的个人EFR验证。
+
+### 12.1.6 阅读这段代码时固定问六件事
+
+1. 输入的几何、材料和波长是什么？
+2. 哪一行真正运行求解器？
+3. 当前读取的是哪个模式，模式身份依据是什么？
+4. 取的是`Pz`、`|E|^2`还是其他物理量？
+5. 气体掩膜是否与真实材料区域一致？
+6. 分子、分母和积分单位是否使用同一套网格与定义？
+
+---
+
 ## 13. Evanescent field 和 leakage 不是一回事
 
 这是后面做气体传感必须一直保留的区别。
