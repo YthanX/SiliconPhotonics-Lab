@@ -48,8 +48,8 @@ A(\varepsilon,\omega)\mathbf e_m=\beta_m^2\mathbf e_m
 | 添加FDE并设置求解参数 | [Eigenmode Solver入口](images/02_eigenmode_solver_menu.png)、[mode1结果页](images/08_mode1_field.png) | 4.23 µm、4个trial modes、`search=near n` | 已完成 |
 | 比较候选本征模 | [Mode list](images/04_mode_list_results.png)及mode1–4场图 | 四个数值解不等于四个目标导模 | 已完成 |
 | 识别quasi-TE0 | [mode1场图](images/08_mode1_field.png) | `neff=1.948420`、TE fraction=94%，与U01机器基准对账一致 | 已完成单点识别 |
-| 宽度扫描与模式追踪 | 尚无0.9/1.0/1.1 µm对照表 | 不能据单点证明跨宽度始终是同一分支 | 待完成 |
-| Poynting EFR | 尚无气体区与全截面`Sz`积分结果 | 截图中的E intensity不能代替EFR | 待完成 |
+| 宽度扫描与模式追踪 | 0.9/1.0/1.05/1.1 µm数值与模场 | neff、TE fraction、EFR和单峰场共同支持同一qTE0分支 | 已完成人工连续性追踪 |
+| Poynting EFR | strip与slot均完成气体区/全截面`Sz`积分 | strip基准10.2300%；slot基准20.8079% | 已完成 |
 
 ---
 
@@ -815,27 +815,20 @@ E\sim e^{-\kappa r_\perp}
 - [x] 明确 `E intensity` 不足以最终判断基模阶数
 - [x] 用`neff + TE fraction + 核心局域模场`与U01机器基准对账，确认当前单点mode1
       对应目标quasi-TE0
+- [x] 完成0.9/1.0/1.05/1.1 µm strip宽度点的人工模式连续性追踪
+- [x] 亲手用`Re(Pz)`积分复现strip基准EFR约10.23%
+- [x] 建立W=2.0 µm、S=0.3 µm的SOS slot单点并复现EFR约20.81%
+- [x] 将slot气体功率分成中央槽9.8777%与槽外气体10.9302%，分区求和闭合
+- [x] 理解FDE在整个横截面求解，neff不是silicon内部的局部折射率
 
 ---
 
-## 15. 当前仍未解决 / 下一步要做
+## 15. 后续扩展
 
-### P1. 用Ex对mode 1做独立场形复核
+### P1. 用定量模场重叠扩展人工模式追踪
 
-下一步：
-
-```text
-Mode plot options
-→ component
-→ 从 E intensity 改成 Ex
-```
-
-重点看：
-
-- 场是否主要位于中央 Si core；
-- Ex 是否单峰；
-- 是否没有额外横向节点；
-- 相位/符号是否符合基模。
+目前已用neff、偏振、EFR趋势和Ex单峰模场完成相邻宽度的人工连续性追踪。若参数范围
+扩大或接近模式交叉，应进一步计算相邻点模场重叠。
 
 ---
 
@@ -856,70 +849,24 @@ Mode plot options
 
 ---
 
-### P3. 做 mode tracking
+### P3. 做二维slot扫描
 
-后面如果扫波导宽度：
-
-\[
-W_1\rightarrow W_2\rightarrow W_3
-\]
-
-不能永远假设：
-
-```text
-mode 1 = 同一个物理模式
-```
-
-因为模式排序可能交换。
-
-正确思路：
-
-\[
-\boxed{
-\text{相邻参数点之间比较场 overlap}
-}
-\]
-
-用 overlap 追踪同一个物理 mode。
+将slot响应视为`EFR=f(W,S)`。先固定W=2.0 µm扫描S=0.2/0.3/0.4 µm，再按论文
+口径固定各个S扫描W；每一点重新生成硅轨与掩膜并追踪目标模式。
 
 ---
 
-### P4. 复现论文 qTE 模式图
+### P4. 完成2014 SOS rib/slab结构学习
 
-目标：
-
-\[
-\lambda=4.23\,\mu m
-\]
-
-逐步对齐论文的：
-
-- strip geometry；
-- qTE 模场；
-- \(n_{\rm eff}\)；
-- field enhancement；
-- EFR。
+strip与slot已有个人实操证据；下一步按论文证据建立rib/slab截面，继续区分论文参数、
+合理假设和未验证分支。
 
 ---
 
-### P5. EFR 计算
+### P5. FDE窗口与网格收敛
 
-确认并追踪 qTE\(_0\) 后，再算：
-
-\[
-\mathrm{EFR}
-=
-\frac{\iint_{\rm gas}S_z\,dA}
-{\iint_{\rm all}S_z\,dA}
-\]
-
-然后做：
-
-\[
-W\rightarrow\mathrm{EFR}(W)
-\]
-
-并与论文趋势比较。
+保持几何、波长、模式分支和近似网格步长不变，分别扩大FDE窗口与加密网格，比较
+neff、模场和EFR是否稳定，避免把窗口截断误差当作结构效应。
 
 ---
 
