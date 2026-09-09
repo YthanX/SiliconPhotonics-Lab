@@ -24,12 +24,12 @@ U00–U08 是教学单元编号，并非新的研究阶段。M1/M3 只作为定�
 | U00 | 项目地图与证据等级 | [完整讲义](docs/lessons/U00_PROJECT_MAP.md) |
 | U01 | M0：FDE、本征模与 Poynting EFR | [完整讲义](docs/lessons/U01_M0_FDE.md) · [MODE实操截图与结果](docs/results/U01_MODE_FDE/README.md) |
 | U02 | M2：SNS 高空气场与三维泄漏 | [待整理](docs/lessons/U02_M2_SNS.md) |
-| U03 | M4：SOI strip/rib 截面与模式追踪 | [待整理](docs/lessons/U03_M4_CROSS_SECTIONS.md) |
-| U04 | M4：真实路径与长度加权 Gamma | [待整理](docs/lessons/U04_M4_PATH_GAMMA.md) |
-| U05 | M4.5：曲率、EME 与失效 FDTD | [待整理](docs/lessons/U05_M45_CURVATURE_PROPAGATION.md) |
-| U06 | M4-2025 / M4-2026 分支审计 | [待整理](docs/lessons/U06_M4_BRANCH_AUDIT.md) |
+| U03 | M4：SOI strip/rib 截面与模式追踪 | [学习记录版](docs/lessons/U03_M4_CROSS_SECTIONS.md) |
+| U04 | M4：真实路径与长度加权 Gamma | [学习记录版](docs/lessons/U04_M4_PATH_GAMMA.md) |
+| U05 | M4.5：曲率、EME 与失效 FDTD | [学习记录版](docs/lessons/U05_M45_CURVATURE_PROPAGATION.md) |
+| U06 | M4-2025 / M4-2026 分支审计 | [学习记录版](docs/lessons/U06_M4_BRANCH_AUDIT.md) |
 | U07 | Beer–Lambert、ADC、DAS 与 WMS/2f | [学习记录版](docs/lessons/U07_TDLAS_SIGNAL_CHAIN.md) |
-| U08 | 综合验收与三分钟项目陈述 | [待整理](docs/lessons/U08_FINAL_ACCEPTANCE.md) |
+| U08 | 综合验收与三分钟项目陈述 | [学习记录版](docs/lessons/U08_FINAL_ACCEPTANCE.md) |
 
 ## 学习方法
 
@@ -38,9 +38,9 @@ U00–U08 是教学单元编号，并非新的研究阶段。M1/M3 只作为定�
     最少必要理论 → GUI 最小重建 → 脚本扩展
     → 证据审计 → 主动复述 → 验收
 
-当前发布 U00、U01 完整讲义，以及 U07 的算法学习记录版。U02–U06、U08 仍保留
-课程路线位置；U07 记录不代表真实硬件实验已经完成。建议一次只学一个单元，先完成
-亲手任务，再回答验收题。
+当前发布 U00、U01 完整讲义，以及 U03–U08 的学习记录版。U02 仍保留课程路线位置，
+U03–U08 的记录不代表完整三维传播、真实硬件实验或综合验收已经完成。建议一次只学
+一个单元，先完成亲手任务，再回答验收题。
 
 ## 结果与证据边界
 
