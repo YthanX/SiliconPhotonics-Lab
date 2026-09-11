@@ -26,6 +26,19 @@
 | U07 | Beer–Lambert、ADC、DAS 与 WMS/2f | [学习记录版](docs/lessons/U07_TDLAS_SIGNAL_CHAIN.md) |
 | U08 | 综合验收与三分钟项目陈述 | [学习记录版](docs/lessons/U08_FINAL_ACCEPTANCE.md) |
 
+## 交互式可视化
+
+这些页面是独立 HTML，可下载后直接用浏览器打开：
+
+| 页面 | 内容 |
+|---|---|
+| [SOS / SOI / SNS 平台对照](docs/visualizations/sos-soi-sns-platforms.html) | 三种材料平台与截面层级的直观比较 |
+| [SOI strip 三维截面](docs/visualizations/soi-strip-3d.html) | SOI 条形波导的三维结构与坐标关系 |
+| [SNS 悬浮结构三维图](docs/visualizations/sns-suspended-3d.html) | 悬浮纳米膜、支撑区与空气场关系 |
+| [strip / ridge 刻蚀深度](docs/visualizations/ridge-strip-etch-depth.html) | 总硅厚、残余 slab 和刻蚀深度的区别 |
+| [slot 波导 EFR 解释器](docs/visualizations/slot-efr-explainer.html) | 槽宽、硅轨宽度与气体场重叠的关系 |
+| [WMS 调制与 2f 演示](docs/visualizations/wms-modulation-demo.html) | 慢扫描、高频调制和二次谐波解调 |
+
 ## 学习方法
 
     必要理论 → GUI 最小重建 → 脚本扩展

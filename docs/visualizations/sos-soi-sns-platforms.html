@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOS、SOI 与 SNS 平台对比</title>
+  <style>
+    :root{color-scheme:light dark;--bg:light-dark(#f7f9fc,#09101d);--fg:light-dark(#172033,#eef4ff);--muted:light-dark(#59667b,#aab8ce);--border:light-dark(#aab5c6,#65758e);--card:light-dark(#fff,#111a2b);--si:light-dark(#397fc2,#4aa3ef);--oxide:light-dark(#d4a84e,#c9a255);--sapphire:light-dark(#9c78ba,#b999d3);--air:light-dark(#e8edf5,#1d2a3f);--field:light-dark(rgba(49,134,211,.18),rgba(83,174,246,.22));--swg:light-dark(#68a56a,#76c87a)}
+    *{box-sizing:border-box}body{margin:0;padding:20px;background:var(--bg);color:var(--fg);font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif}main{max-width:1120px;margin:auto}h1{margin:0 0 6px;font-size:clamp(22px,3vw,32px);font-weight:500}p{margin:5px 0}.muted{color:var(--muted)}.legend{display:flex;flex-wrap:wrap;gap:13px;margin:14px 0}.legend span{display:inline-flex;gap:5px;align-items:center}.sw{width:14px;height:10px;display:inline-block}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.platform{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px}.platform h2{margin:0 0 3px;font-size:20px;font-weight:500}.platform svg{width:100%;height:auto;display:block;margin:7px 0}.platform svg text{fill:var(--fg);font-family:inherit;font-size:12px}.key{border-top:2px solid var(--border);padding-top:7px}.detail{margin-top:15px;padding-top:12px;border-top:1px solid var(--border)}.detail strong{font-weight:500}@media(max-width:850px){.grid{grid-template-columns:1fr}.platform svg{max-height:340px}}
+  </style>
+</head>
+<body>
+<main>
+  <h1>SOS、SOI、SNS：差别主要在波导下面</h1>
+  <p class="muted">三者都可以让气体接触上方倏逝场；真正改变泄漏、约束和可制造性的，是核心下方是否存在高折射率衬底、BOX或空气间隙。</p>
+  <div class="legend" aria-label="材料图例"><span><i class="sw" style="background:var(--si)"></i>Si</span><span><i class="sw" style="background:var(--oxide)"></i>SiO₂</span><span><i class="sw" style="background:var(--sapphire)"></i>蓝宝石</span><span><i class="sw" style="background:var(--swg)"></i>SWG支撑</span><span><i class="sw" style="background:var(--air)"></i>空气</span></div>
+  <div class="grid">
+    <section class="platform">
+      <h2>SOS</h2><p class="muted">Silicon on Sapphire</p>
+      <svg viewBox="0 0 330 330" role="img" aria-label="硅波导直接位于蓝宝石衬底上的SOS横截面">
+        <ellipse cx="165" cy="105" rx="105" ry="66" fill="var(--field)"/>
+        <rect x="112" y="110" width="106" height="72" fill="var(--si)"/>
+        <rect x="25" y="182" width="280" height="108" fill="var(--sapphire)"/>
+        <text x="165" y="151" text-anchor="middle">Si 核心</text><text x="165" y="240" text-anchor="middle">蓝宝石衬底</text><text x="165" y="64" text-anchor="middle">气体 / 空气</text>
+      </svg>
+      <p class="key"><strong>核心下面：</strong>直接接蓝宝石，没有SiO₂ BOX和Si handle。</p>
+      <p class="muted">2014 SOS条形/槽型波导属于这一类。衬底折射率低于Si，但仍参与下方模场约束。</p>
+    </section>
+    <section class="platform">
+      <h2>SOI</h2><p class="muted">Silicon on Insulator</p>
+      <svg viewBox="0 0 330 330" role="img" aria-label="顶层硅波导、二氧化硅BOX和硅衬底组成的SOI横截面">
+        <ellipse cx="165" cy="92" rx="105" ry="66" fill="var(--field)"/>
+        <rect x="112" y="108" width="106" height="55" fill="var(--si)"/>
+        <rect x="25" y="163" width="280" height="63" fill="var(--oxide)"/>
+        <rect x="25" y="226" width="280" height="66" fill="var(--si)" opacity=".78"/>
+        <text x="165" y="142" text-anchor="middle">顶层 Si</text><text x="165" y="202" text-anchor="middle">SiO₂ BOX</text><text x="165" y="266" text-anchor="middle">Si handle</text><text x="165" y="48" text-anchor="middle">气体 / 空气</text>
+      </svg>
+      <p class="key"><strong>核心下面：</strong>先是低折射率SiO₂ BOX，再是高折射率Si衬底。</p>
+      <p class="muted">M4的strip/ridge都属于SOI；BOX足够厚时可隔离Si衬底，过薄则可能发生衬底泄漏。</p>
+    </section>
+    <section class="platform">
+      <h2>SNS</h2><p class="muted">Suspended Nanomembrane Silicon</p>
+      <svg viewBox="0 0 330 330" role="img" aria-label="超薄悬浮硅膜、空气间隙、SWG支撑和远处衬底组成的SNS横截面">
+        <ellipse cx="165" cy="87" rx="118" ry="78" fill="var(--field)"/>
+        <rect x="118" y="112" width="94" height="14" fill="var(--si)"/>
+        <g fill="var(--swg)"><rect x="30" y="100" width="28" height="42"/><rect x="68" y="100" width="28" height="42"/><rect x="234" y="100" width="28" height="42"/><rect x="272" y="100" width="28" height="42"/></g>
+        <rect x="25" y="126" width="280" height="68" fill="var(--air)"/>
+        <rect x="25" y="194" width="280" height="42" fill="var(--oxide)"/>
+        <rect x="25" y="236" width="280" height="56" fill="var(--si)" opacity=".78"/>
+        <text x="165" y="108" text-anchor="middle">超薄Si膜</text><text x="165" y="166" text-anchor="middle">移除BOX后的空气槽</text><text x="165" y="220" text-anchor="middle">远处SiO₂</text><text x="165" y="269" text-anchor="middle">Si衬底</text><text x="52" y="91" text-anchor="middle">SWG</text><text x="278" y="91" text-anchor="middle">SWG</text>
+      </svg>
+      <p class="key"><strong>核心下面：</strong>局部BOX被移除，超薄Si核心下方直接是空气；SWG连接到两侧锚区。</p>
+      <p class="muted">空气上下包围使外场占比更高；SWG同时承担机械支撑与横向光学约束，但加工和可靠性更复杂。</p>
+    </section>
+  </div>
+  <div class="detail"><strong>一眼区分：</strong> SOS是“Si直接在蓝宝石上”；SOI是“Si / SiO₂ / Si三层”；SNS是“把感测区核心下方掏空，用空气和SWG把超薄Si膜悬起来”。</div>
+</main>
+</body>
+</html>

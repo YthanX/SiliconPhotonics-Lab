@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOS 槽型波导与 EFR 峰值</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --background: light-dark(#f7f9fc, #09101d);
+      --foreground: light-dark(#172033, #eef4ff);
+      --muted: light-dark(#e8edf5, #1d2a3f);
+      --muted-foreground: light-dark(#59667b, #aab8ce);
+      --border: light-dark(#aab5c6, #65758e);
+      --card: light-dark(#ffffff, #111a2b);
+      --popover: light-dark(#ffffff, #0c1423);
+      --series-1: light-dark(#1769aa, #55aef5);
+      --series-2: light-dark(#167c5a, #54c798);
+      --series-3: light-dark(#b45a19, #f39a53);
+      --silicon: light-dark(#4f86c6, #4aa3ef);
+      --sapphire: light-dark(#e3bd74, #c9a255);
+      --field: light-dark(rgba(70,150,220,.18), rgba(87,181,255,.22));
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 20px; background: var(--background); color: var(--foreground); font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; }
+    main { max-width: 1080px; margin: 0 auto; }
+    h1 { margin: 0 0 6px; font-size: clamp(22px, 3vw, 32px); font-weight: 500; }
+    p { margin: 5px 0; }
+    .muted { color: var(--muted-foreground); }
+    .controls { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: end; margin: 16px 0; }
+    .control { display: grid; gap: 5px; min-width: 220px; }
+    .control-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    button { font: inherit; color: var(--foreground); background: transparent; border: 1px solid var(--border); border-radius: 7px; padding: 6px 11px; cursor: pointer; }
+    button[aria-pressed="true"] { background: var(--foreground); color: var(--background); }
+    input[type="range"] { width: min(420px, 75vw); }
+    .grid { display: grid; grid-template-columns: minmax(300px, .85fr) minmax(390px, 1.15fr); gap: 18px; align-items: start; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+    .panel h2 { margin: 0 0 7px; font-size: 18px; font-weight: 500; }
+    svg { width: 100%; height: auto; display: block; }
+    svg text { fill: var(--foreground); font-family: inherit; font-size: 12px; }
+    .axis, .gridline { stroke: var(--border); vector-effect: non-scaling-stroke; }
+    .gridline { opacity: .28; }
+    .formula { font-family: "Cambria Math", "Times New Roman", serif; font-size: 18px; }
+    .phase { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 12px; }
+    .phase div { border-top: 3px solid var(--border); padding-top: 6px; color: var(--muted-foreground); }
+    .phase .active { border-color: var(--series-1); color: var(--foreground); }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } .phase { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main id="slot-efr-app">
+  <h1>SOS 槽型波导：为什么 EFR 会出现峰值</h1>
+  <p class="muted">每条曲线固定一个槽宽 S，再扫描总宽 W；两侧单根硅轨宽度始终为 (W−S)/2。</p>
+
+  <div class="controls" aria-label="槽型波导参数">
+    <div class="control">
+      <span>固定槽宽 S</span>
+      <div class="control-row" id="slot-buttons">
+        <button type="button" data-slot="0.2" aria-pressed="true">0.2 μm</button>
+        <button type="button" data-slot="0.3" aria-pressed="false">0.3 μm</button>
+        <button type="button" data-slot="0.4" aria-pressed="false">0.4 μm</button>
+      </div>
+    </div>
+    <label class="control" for="total-width">
+      <span>总宽 W：<strong id="width-value">1.6 μm</strong></span>
+      <input id="total-width" type="range" min="1" max="2.5" step="0.1" value="1.6">
+    </label>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>横截面参数</h2>
+      <svg id="cross-section" viewBox="0 0 440 320" role="img" aria-label="槽型硅波导横截面随总宽和槽宽变化"></svg>
+      <p><span class="formula">w<sub>rail</sub>=(W−S)/2</span> = <strong id="rail-value">0.70 μm</strong></p>
+      <p class="muted">W 是从左侧硅轨外边缘量到右侧硅轨外边缘，不是单根硅轨宽度。</p>
+    </section>
+
+    <section class="panel">
+      <h2>实际 FDE 扫描结果</h2>
+      <svg id="efr-chart" viewBox="0 0 620 390" role="img" aria-label="三种固定槽宽下 EFR 随总宽变化的曲线"></svg>
+      <p>当前位置：EFR = <strong id="efr-value">26.58%</strong>；该槽宽峰值位于 <strong id="peak-value">W=1.6 μm</strong>。</p>
+      <div class="phase" aria-label="EFR 峰值的三个区域">
+        <div id="phase-left"><strong>过窄</strong><br>硅轨太弱，目标导模尚未稳定建立。</div>
+        <div id="phase-mid"><strong>峰值附近</strong><br>槽内增强与整体导模约束达到平衡。</div>
+        <div id="phase-right"><strong>过宽</strong><br>硅轨束缚增强，更多功率回到高折射率硅中。</div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+(() => {
+  const data = [
+    {w:1.0,s:0.2,e:.120935},{w:1.1,s:0.2,e:.137357},{w:1.2,s:0.2,e:.163381},{w:1.3,s:0.2,e:.196995},{w:1.4,s:0.2,e:.232114},{w:1.5,s:0.2,e:.256577},{w:1.6,s:0.2,e:.265839},{w:1.7,s:0.2,e:.260221},{w:1.8,s:0.2,e:.243752},{w:1.9,s:0.2,e:.222502},{w:2.0,s:0.2,e:.199782},{w:2.1,s:0.2,e:.178743},{w:2.2,s:0.2,e:.154028},{w:2.3,s:0.2,e:.145178},{w:2.4,s:0.2,e:.128573},{w:2.5,s:0.2,e:.119411},
+    {w:1.0,s:0.3,e:.107630},{w:1.1,s:0.3,e:.115311},{w:1.2,s:0.3,e:.127546},{w:1.3,s:0.3,e:.144358},{w:1.4,s:0.3,e:.167582},{w:1.5,s:0.3,e:.194516},{w:1.6,s:0.3,e:.220791},{w:1.7,s:0.3,e:.237501},{w:1.8,s:0.3,e:.238965},{w:1.9,s:0.3,e:.228072},{w:2.0,s:0.3,e:.208079},{w:2.1,s:0.3,e:.185670},{w:2.2,s:0.3,e:.164173},{w:2.3,s:0.3,e:.146144},{w:2.4,s:0.3,e:.131514},{w:2.5,s:0.3,e:.120134},
+    {w:1.0,s:0.4,e:.101125},{w:1.1,s:0.4,e:.105467},{w:1.2,s:0.4,e:.112329},{w:1.3,s:0.4,e:.121209},{w:1.4,s:0.4,e:.133810},{w:1.5,s:0.4,e:.150184},{w:1.6,s:0.4,e:.171949},{w:1.7,s:0.4,e:.195456},{w:1.8,s:0.4,e:.212767},{w:1.9,s:0.4,e:.219715},{w:2.0,s:0.4,e:.211979},{w:2.1,s:0.4,e:.194789},{w:2.2,s:0.4,e:.172939},{w:2.3,s:0.4,e:.152627},{w:2.4,s:0.4,e:.135259},{w:2.5,s:0.4,e:.121749}
+  ];
+  const root = document.getElementById('slot-efr-app');
+  const slider = document.getElementById('total-width');
+  let slot = 0.2;
+  const ns = 'http://www.w3.org/2000/svg';
+  const color = s => s === 0.2 ? 'var(--series-1)' : s === 0.3 ? 'var(--series-2)' : 'var(--series-3)';
+  const make = (tag, attrs={}) => { const n=document.createElementNS(ns,tag); Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v)); return n; };
+  const text = (svg,x,y,value,anchor='middle') => { const n=make('text',{x,y,'text-anchor':anchor}); n.textContent=value; svg.appendChild(n); return n; };
+
+  function drawCross() {
+    const svg=document.getElementById('cross-section'); svg.replaceChildren();
+    const W=+slider.value, rail=(W-slot)/2;
+    const x0=55, x1=385, yBase=245, h=92, scale=(x1-x0)/2.5;
+    const totalPx=W*scale, slotPx=slot*scale, left=(x0+x1-totalPx)/2;
+    const railPx=rail*scale;
+    const field=make('ellipse',{cx:220,cy:175,rx:Math.min(176,90+W*34),ry:82,fill:'var(--field)'}); svg.appendChild(field);
+    svg.appendChild(make('rect',{x:28,y:yBase,width:384,height:48,fill:'var(--sapphire)',opacity:.82}));
+    svg.appendChild(make('rect',{x:left,y:yBase-h,width:railPx,height:h,fill:'var(--silicon)'}));
+    svg.appendChild(make('rect',{x:left+railPx+slotPx,y:yBase-h,width:railPx,height:h,fill:'var(--silicon)'}));
+    svg.appendChild(make('line',{x1:left,y1:132,x2:left+totalPx,y2:132,stroke:'var(--foreground)','stroke-width':1.4}));
+    svg.appendChild(make('line',{x1:left+railPx,y1:145,x2:left+railPx+slotPx,y2:145,stroke:'var(--series-3)','stroke-width':2}));
+    text(svg,220,118,`总宽 W = ${W.toFixed(1)} μm`);
+    text(svg,left+railPx+slotPx/2,137,`S=${slot.toFixed(1)}`);
+    text(svg,left+railPx/2,202,'Si'); text(svg,left+railPx+slotPx+railPx/2,202,'Si');
+    text(svg,220,231,'气体槽'); text(svg,220,276,'蓝宝石衬底');
+    text(svg,220,45,'气体区域中的倏逝场', 'middle');
+    document.getElementById('rail-value').textContent=`${rail.toFixed(2)} μm`;
+  }
+
+  function drawChart() {
+    const svg=document.getElementById('efr-chart'); svg.replaceChildren();
+    const L=58,R=20,T=18,B=55,W=620-L-R,H=390-T-B;
+    const sx=x=>L+(x-1)/1.5*W, sy=y=>T+(0.29-y)/0.21*H;
+    [0.10,0.15,0.20,0.25].forEach(v=>{svg.appendChild(make('line',{x1:L,y1:sy(v),x2:L+W,y2:sy(v),class:'gridline'})); text(svg,L-9,sy(v)+4,`${Math.round(v*100)}%`,'end');});
+    [1.0,1.5,2.0,2.5].forEach(v=>{svg.appendChild(make('line',{x1:sx(v),y1:T,x2:sx(v),y2:T+H,class:'gridline'})); text(svg,sx(v),T+H+22,v.toFixed(1));});
+    svg.appendChild(make('rect',{x:L,y:T,width:W,height:H,fill:'none',class:'axis'}));
+    [0.2,0.3,0.4].forEach(s=>{
+      const rows=data.filter(d=>d.s===s); const pts=rows.map(d=>`${sx(d.w)},${sy(d.e)}`).join(' ');
+      svg.appendChild(make('polyline',{points:pts,fill:'none',stroke:color(s),'stroke-width':s===slot?3:1.7,opacity:s===slot?1:.55}));
+      rows.forEach(d=>svg.appendChild(make('circle',{cx:sx(d.w),cy:sy(d.e),r:s===slot?3.5:2.4,fill:color(s),opacity:s===slot?1:.55})));
+      const peak=rows.reduce((a,b)=>a.e>b.e?a:b); text(svg,sx(peak.w),sy(peak.e)-11,`S=${s.toFixed(1)}`);
+    });
+    const current=data.find(d=>d.s===slot && Math.abs(d.w-(+slider.value))<.001);
+    svg.appendChild(make('circle',{cx:sx(current.w),cy:sy(current.e),r:7,fill:'var(--card)',stroke:color(slot),'stroke-width':3}));
+    text(svg,L+W/2,382,'总宽 W（μm）');
+    const yl=text(svg,15,T+H/2,'EFR（气体区纵向功率 / 总功率）'); yl.setAttribute('transform',`rotate(-90 15 ${T+H/2})`);
+    const peak=data.filter(d=>d.s===slot).reduce((a,b)=>a.e>b.e?a:b);
+    document.getElementById('efr-value').textContent=`${(100*current.e).toFixed(2)}%`;
+    document.getElementById('peak-value').textContent=`W=${peak.w.toFixed(1)} μm`;
+    ['phase-left','phase-mid','phase-right'].forEach(id=>document.getElementById(id).classList.remove('active'));
+    document.getElementById(current.w<peak.w-.1?'phase-left':current.w>peak.w+.1?'phase-right':'phase-mid').classList.add('active');
+  }
+
+  function update(){ document.getElementById('width-value').textContent=`${(+slider.value).toFixed(1)} μm`; drawCross(); drawChart(); }
+  slider.addEventListener('input',update);
+  document.getElementById('slot-buttons').addEventListener('click',e=>{
+    const b=e.target.closest('button[data-slot]'); if(!b)return; slot=+b.dataset.slot;
+    document.querySelectorAll('button[data-slot]').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
+    const peak=data.filter(d=>d.s===slot).reduce((a,b)=>a.e>b.e?a:b); slider.value=peak.w; update();
+  });
+  update();
+})();
+</script>
+</body>
+</html>

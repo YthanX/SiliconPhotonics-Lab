@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ridge 与 Strip：刻蚀深度连续过渡</title>
+  <style>
+    :root { color-scheme: light dark; --bg:light-dark(#f7f9fc,#09101d); --fg:light-dark(#172033,#eef4ff); --muted:light-dark(#59667b,#aab8ce); --border:light-dark(#aab5c6,#65758e); --card:light-dark(#fff,#111a2b); --si:light-dark(#397fc2,#4aa3ef); --oxide:light-dark(#d4a84e,#c9a255); --field:light-dark(rgba(49,134,211,.18),rgba(83,174,246,.22)); }
+    *{box-sizing:border-box} body{margin:0;padding:20px;background:var(--bg);color:var(--fg);font-family:"Segoe UI","Microsoft YaHei",system-ui,sans-serif} main{max-width:980px;margin:auto} h1{margin:0 0 6px;font-size:clamp(22px,3vw,32px);font-weight:500} p{margin:6px 0}.muted{color:var(--muted)} .controls{display:flex;flex-wrap:wrap;gap:18px;margin:18px 0;align-items:end}.control{display:grid;gap:5px;min-width:min(420px,85vw)} input[type=range]{width:min(540px,88vw)} .stats{display:flex;flex-wrap:wrap;gap:12px 24px;margin:8px 0 14px}.stats strong{font-variant-numeric:tabular-nums}.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px} svg{width:100%;height:auto;display:block} svg text{fill:var(--fg);font-family:inherit;font-size:13px}.compare{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.compare div{border-top:3px solid var(--border);padding-top:7px}.compare .active{border-color:var(--si)} @media(max-width:650px){.compare{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main id="ridge-app">
+  <h1>Ridge 和 Strip 不是两种互不相干的结构</h1>
+  <p class="muted">固定顶层硅总厚度 220 nm；改变两侧刻蚀深度，就能连续地从浅刻 ridge 走到全刻 strip。</p>
+  <div class="controls">
+    <label class="control" for="etch-depth"><span>两侧刻蚀深度：<strong id="etch-label">150 nm</strong></span><input id="etch-depth" type="range" min="0" max="220" step="5" value="150"></label>
+  </div>
+  <div class="stats"><span>剩余 slab：<strong id="slab-label">70 nm</strong></span><span>中央脊高：<strong id="ridge-label">150 nm</strong></span><span>当前结构：<strong id="type-label">ridge / rib</strong></span></div>
+  <section class="panel">
+    <svg id="ridge-svg" viewBox="0 0 900 470" role="img" aria-label="可调刻蚀深度的SOI ridge横截面，刻蚀到底时变为strip"></svg>
+  </section>
+  <div class="compare">
+    <div id="state-unetched"><strong>未刻蚀：0 nm</strong><br><span class="muted">仍是一整层硅，尚未形成横向波导。</span></div>
+    <div id="state-ridge"><strong>部分刻蚀：0–220 nm</strong><br><span class="muted">两侧保留slab，中央是凸起的ridge/rib。</span></div>
+    <div id="state-strip"><strong>全刻蚀：220 nm</strong><br><span class="muted">两侧硅全部去除，只剩矩形strip。</span></div>
+  </div>
+</main>
+<script>
+(()=>{
+  const slider=document.getElementById('etch-depth'),svg=document.getElementById('ridge-svg'),ns='http://www.w3.org/2000/svg';
+  const mk=(t,a={})=>{const n=document.createElementNS(ns,t);Object.entries(a).forEach(([k,v])=>n.setAttribute(k,v));return n};
+  const tx=(x,y,s,anchor='middle')=>{const n=mk('text',{x,y,'text-anchor':anchor});n.textContent=s;svg.appendChild(n);return n};
+  function draw(){
+    const etch=+slider.value,slab=220-etch; svg.replaceChildren();
+    const x0=85,x1=815,boxY=350,boxH=72,siTop=165,totalPx=170,slabPx=totalPx*slab/220,slabTop=boxY-slabPx,ridgeX=330,ridgeW=240;
+    svg.appendChild(mk('ellipse',{cx:450,cy:235,rx:235,ry:105,fill:'var(--field)'}));
+    svg.appendChild(mk('rect',{x:x0,y:boxY,width:x1-x0,height:boxH,fill:'var(--oxide)'}));
+    if(slab>0)svg.appendChild(mk('rect',{x:x0,y:slabTop,width:x1-x0,height:slabPx,fill:'var(--si)',opacity:.8}));
+    svg.appendChild(mk('rect',{x:ridgeX,y:siTop,width:ridgeW,height:boxY-siTop,fill:'var(--si)'}));
+    svg.appendChild(mk('line',{x1:ridgeX-38,y1:siTop,x2:ridgeX-38,y2:boxY,stroke:'var(--fg)','stroke-width':1.5}));
+    tx(ridgeX-50,(siTop+boxY)/2,'220 nm', 'end');
+    if(slab>0){svg.appendChild(mk('line',{x1:760,y1:slabTop,x2:760,y2:boxY,stroke:'var(--fg)','stroke-width':1.5}));tx(775,(slabTop+boxY)/2,`${slab} nm`,'start');}
+    tx(450,145,'中央硅脊：保持完整220 nm'); tx(450,392,'SiO₂ BOX'); tx(450,455,'下方 Si 衬底（未按比例画出）');
+    tx(175,Math.max(182,slabTop-14),etch===220?'两侧刻蚀到BOX':'两侧向下刻蚀');
+    if(slab>0)tx(170,slabTop+Math.max(18,slabPx/2),'剩余 Si slab');
+    const state=etch===0?'未形成ridge':etch===220?'strip（全刻蚀）':'ridge / rib（部分刻蚀）';
+    document.getElementById('etch-label').textContent=`${etch} nm`;document.getElementById('slab-label').textContent=`${slab} nm`;document.getElementById('ridge-label').textContent=`${etch} nm`;document.getElementById('type-label').textContent=state;
+    ['state-unetched','state-ridge','state-strip'].forEach(id=>document.getElementById(id).classList.remove('active'));
+    document.getElementById(etch===0?'state-unetched':etch===220?'state-strip':'state-ridge').classList.add('active');
+  }
+  slider.addEventListener('input',draw); draw();
+})();
+</script>
+</body>
+</html>
