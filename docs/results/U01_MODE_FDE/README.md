@@ -17,28 +17,28 @@
 
 目前使用的是 **Ansys Lumerical MODE**。我们当前重点使用的是：
 
-\[
+$$
 \boxed{\text{Eigenmode Solver} \equiv \text{FDE (Finite-Difference Eigenmode)}}
-\]
+$$
 
 FDE 的任务不是沿波导一步一步传播，而是在给定横截面上求解 Maxwell 本征问题：
 
-\[
+$$
 A(\varepsilon,\omega)\mathbf e_m=\beta_m^2\mathbf e_m
-\]
+$$
 
 其中：
 
-- \(A\)：由材料、几何、波长、边界条件决定的 Maxwell 离散算子；
-- \(\mathbf e_m(x,y)\)：第 \(m\) 个横截面模式的场分布；
-- \(\beta_m\)：该模式的传播常数；
-- \(n_{\rm eff,m}=\beta_m/k_0\)。
+- $A$：由材料、几何、波长、边界条件决定的 Maxwell 离散算子；
+- $\mathbf e_m(x,y)$：第 $m$ 个横截面模式的场分布；
+- $\beta_m$：该模式的传播常数；
+- $n_{\rm eff,m}=\beta_m/k_0$。
 
 完整场可以写成：
 
-\[
+$$
 \mathbf E_m(x,y,z)=\mathbf e_m(x,y)e^{i\beta_m z}.
-\]
+$$
 
 ## 0.1 与U01讲义的对应关系
 
@@ -76,15 +76,15 @@ A(\varepsilon,\omega)\mathbf e_m=\beta_m^2\mathbf e_m
 | XZ / YZ View | 侧视图 | 检查三维几何 |
 | Perspective View | 透视图 | 检查整体结构 |
 | Script Prompt / Script File Editor | 脚本区 | 后续自动 sweep |
-| Eigensolver Analysis | 本征模分析 | 求 mode、看 \(n_{\rm eff}\)、场分布 |
+| Eigensolver Analysis | 本征模分析 | 求 mode、看 $n_{\rm eff}$、场分布 |
 
 当前统一坐标约定：
 
-\[
+$$
 \boxed{+z=\text{波导传播方向}}
-\]
+$$
 
-所以 FDE 主要求的是 **\(x-y\) 横截面**。
+所以 FDE 主要求的是 **$x-y$ 横截面**。
 
 ---
 
@@ -94,9 +94,9 @@ A(\varepsilon,\omega)\mathbf e_m=\beta_m^2\mathbf e_m
 
 在 Lumerical 2025 R2 里：
 
-\[
+$$
 \boxed{\text{Simulation} \rightarrow \text{Eigenmode Solver}}
-\]
+$$
 
 就是添加 FDE。
 
@@ -116,7 +116,7 @@ A(\varepsilon,\omega)\mathbf e_m=\beta_m^2\mathbf e_m
 
 | 参数 | 中文 | 当前理解 |
 |---|---|---|
-| wavelength | 波长 | 当前 \(4.23\,\mu m\) |
+| wavelength | 波长 | 当前 $4.23\,\mu m$ |
 | frequency | 频率 | 与波长等价 |
 | number of trial modes | 尝试求解的模式数 | 当前为 4 |
 | search | 本征值搜索策略 | 可选 near n / in range |
@@ -142,28 +142,28 @@ y span = 5 μm
 
 则：
 
-\[
+$$
 y_{\min}=0.5-\frac{5}{2}=-2~\mu m
-\]
+$$
 
-\[
+$$
 y_{\max}=0.5+\frac{5}{2}=3~\mu m
-\]
+$$
 
 因此：
 
-\[
+$$
 \boxed{y\in[-2,3]~\mu m}
-\]
+$$
 
 统一公式：
 
-\[
+$$
 q_{\min}=q-\frac{q_{\rm span}}2,\qquad
 q_{\max}=q+\frac{q_{\rm span}}2.
-\]
+$$
 
-> `span = 5 μm` 是总宽度 5 μm，不是 \(\pm5\,\mu m\)。
+> `span = 5 μm` 是总宽度 5 μm，不是 $\pm5\,\mu m$。
 
 ---
 
@@ -195,11 +195,11 @@ number of trial modes = 4
 
 所以：
 
-\[
+$$
 \boxed{\text{Calculate Modes 找到 4 个解}
 \neq
 \text{波导支持 4 个目标导模}}
-\]
+$$
 
 ---
 
@@ -209,7 +209,7 @@ number of trial modes = 4
 
 当前 4.23 μm 结果：
 
-| mode | \(n_{\rm eff}\) | group index | TE polarization fraction | waveguide TE/TM fraction | effective area |
+| mode | $n_{\rm eff}$ | group index | TE polarization fraction | waveguide TE/TM fraction | effective area |
 |---|---:|---:|---:|---:|---:|
 | 1 | **1.948420** | 4.426797 | **94%** | 64.19 / 83.36 | **1.76066 μm²** |
 | 2 | 1.669904 | 2.429414 | 5% | 87.14 / 89.49 | 3.79681 μm² |
@@ -218,15 +218,15 @@ number of trial modes = 4
 
 注意：
 
-\[
+$$
 \boxed{\text{mode 1 / 2 / 3 / 4 只是本次求解排序}}
-\]
+$$
 
 它们不是永久的物理名字。
 
 真正物理身份需要结合：
 
-\[
+$$
 \boxed{
 \text{场分布}
 +
@@ -236,7 +236,7 @@ n_{\rm eff}
 +
 \text{节点数}
 }
-\]
+$$
 
 来判断。
 
@@ -277,13 +277,13 @@ waveguide TE fraction
 
 - 场主要进入 sapphire 深处；
 - 中央 Si 波导附近并不是主要能量区；
-- \(n_{\rm eff}=1.439458\)。
+- $n_{\rm eff}=1.439458$。
 
 初步判断：
 
-\[
+$$
 \boxed{\text{不是目标 Si core guided mode}}
-\]
+$$
 
 当前截图呈现明显的substrate/window-like特征：
 
@@ -304,14 +304,14 @@ waveguide TE fraction
 
 - 场主要分布在 Si / substrate 界面及其周围；
 - 横向并没有明显被中心 Si core 束缚；
-- \(n_{\rm eff}=1.454987\)；
+- $n_{\rm eff}=1.454987$；
 - TE fraction 仅 11%。
 
 初步判断：
 
-\[
+$$
 \boxed{\text{不是目标 qTE}_0}
-\]
+$$
 
 更像 substrate/interface-like 解。这里的“更像”是场形诊断，不是完整泄漏证明。
 
@@ -325,14 +325,14 @@ waveguide TE fraction
 
 - 有一定界面附近集中；
 - 但并没有像真正 qTE core mode 那样明显集中在 Si core；
-- \(n_{\rm eff}=1.669904\)；
+- $n_{\rm eff}=1.669904$；
 - TE fraction 仅 5%。
 
 初步判断：
 
-\[
+$$
 \boxed{\text{不是本次目标 quasi-TE}_0}
-\]
+$$
 
 它的`neff`几乎贴近sapphire折射率1.67，且TE polarization fraction仅5%；结合场主要
 分布在Si/sapphire界面下方，可作为TM/substrate-like候选，但本页不进一步断言其
@@ -346,21 +346,21 @@ waveguide TE fraction
 
 Mode 1 的特征：
 
-\[
+$$
 n_{\rm eff}=1.948420
-\]
+$$
 
-\[
+$$
 \text{TE polarization fraction}=94\%
-\]
+$$
 
 且场明显集中在中央 Si 矩形及其周围。
 
 因此当前最合理的判断是：
 
-\[
+$$
 \boxed{\text{当前单点的 mode 1 与 U01 基准 quasi-TE}_0\text{ 一致}}
-\]
+$$
 
 确认依据不是“它叫mode1”，而是`neff=1.948420`与机器基准一致、TE polarization
 fraction约94%，并且模场局域在Si核心。当前显示的`E intensity`会丢失符号，因此它
@@ -372,7 +372,7 @@ fraction约94%，并且模场局域在Si核心。当前显示的`E intensity`会
 
 FDE 实际求的是整个计算窗口：
 
-\[
+$$
 \text{silicon}
 +
 \text{sapphire}
@@ -382,7 +382,7 @@ FDE 实际求的是整个计算窗口：
 \text{boundary condition}
 +
 \text{finite simulation window}
-\]
+$$
 
 对应的 Maxwell 本征问题。
 
@@ -396,13 +396,13 @@ FDE 实际求的是整个计算窗口：
 
 因此：
 
-\[
+$$
 \boxed{
 \text{FDE eigenmode}
 \neq
 \text{一定是我们感兴趣的 waveguide guided mode}
 }
-\]
+$$
 
 必须由我们做物理筛选。
 
@@ -418,25 +418,25 @@ FDE 实际求的是整个计算窗口：
 
 ---
 
-### 9.2 有效折射率 \(n_{\rm eff}\)
+### 9.2 有效折射率 $n_{\rm eff}$
 
 对于普通无损、真正被 core 束缚的模式，通常希望满足：
 
-\[
+$$
 \max(n_{\rm clad},n_{\rm substrate})
 <
 n_{\rm eff}
 <
 n_{\rm core}
-\]
+$$
 
 这不是绝对万能判据，但非常有用。
 
 如果一个模式：
 
-\[
+$$
 n_{\rm eff}
-\]
+$$
 
 已经非常接近 substrate / cladding 折射率，同时场又铺在 substrate 中，就要高度警惕它是 substrate-like 模式。
 
@@ -461,9 +461,9 @@ TE polarization fraction (Ex)
 
 但是：
 
-\[
+$$
 \boxed{\text{TE fraction 高}\neq\text{自动等于 TE}_0}
-\]
+$$
 
 它只能判断“偏振家族”，不能判断阶数。
 
@@ -481,25 +481,25 @@ component = E intensity
 
 即：
 
-\[
+$$
 |E|^2
-\]
+$$
 
 强度没有正负号，因此无法可靠判断场的符号变化和节点。
 
 下一步应该看：
 
-\[
+$$
 E_x
-\]
+$$
 
 或者其他主导场分量的 real part / amplitude。
 
 对当前 qTE 候选，优先看：
 
-\[
+$$
 \boxed{E_x(x,y)}
-\]
+$$
 
 ---
 
@@ -509,17 +509,17 @@ E_x
 
 因此通常说：
 
-\[
+$$
 \boxed{\text{quasi-TE}}
-\]
+$$
 
 和：
 
-\[
+$$
 \boxed{\text{quasi-TM}}
-\]
+$$
 
-qTE 的意思不是“只有 \(E_x\)”。
+qTE 的意思不是“只有 $E_x$”。
 
 而是：
 
@@ -527,9 +527,9 @@ qTE 的意思不是“只有 \(E_x\)”。
 
 所以：
 
-\[
+$$
 E_x,E_y,E_z
-\]
+$$
 
 都可能不为 0。
 
@@ -541,17 +541,17 @@ E_x,E_y,E_z
 
 论文在：
 
-\[
+$$
 \lambda=4.23~\mu m
-\]
+$$
 
 研究 strip / rib / slot 波导，并讨论 qTE、qTM 模式与 EFR。
 
 其中 strip qTE 示例参数之一：
 
-\[
+$$
 W=1~\mu m,\qquad H=0.6~\mu m
-\]
+$$
 
 论文展示的 qTE 模场主要围绕 Si 波导分布，同时在侧壁气体区有明显场增强。
 
@@ -571,32 +571,32 @@ W=1~\mu m,\qquad H=0.6~\mu m
 
 2014 论文定义：
 
-\[
+$$
 \eta=
 \frac{
 \iint_{\rm Gas}\mathbf S\cdot\mathbf n\,dA
 }{
 \iint_{\rm All}\mathbf S\cdot\mathbf n\,dA
 }
-\]
+$$
 
 其中：
 
-- \(\mathbf S\)：Poynting vector；
+- $\mathbf S$：Poynting vector；
 - 分子：气体区域中的传播功率；
 - 分母：整个模式总传播功率。
 
 所以：
 
-\[
+$$
 \boxed{\mathrm{EFR}=\text{模式传播功率中位于气体区域的比例}}
-\]
+$$
 
 不是简单的：
 
-\[
+$$
 \frac{\int_{\rm gas}|E|^2}{\int_{\rm all}|E|^2}
-\]
+$$
 
 也不是实际输入光中某个 mode 的激发系数。
 
@@ -683,17 +683,17 @@ pz = np.real(np.asarray(poynting["P"])[:, :, 0, 0, 2])
 其中最后的`2`表示Python从0开始计数的第三个分量，即`Pz`。它对应时间平均纵向功率
 密度：
 
-\[
+$$
 S_z=\frac{1}{2}\,\mathrm{Re}\left(E_xH_y^*-E_yH_x^*\right).
-\]
+$$
 
 ### 12.1.4 怎样把“气体区域”翻译成布尔掩膜
 
 当前silicon核心占据：
 
-\[
+$$
 -0.5\le x\le0.5~\mu m,\qquad 0\le y\le0.6~\mu m.
-\]
+$$
 
 代码先标记核心，再把“sapphire上表面以上且不属于核心”的网格标为气体：
 
@@ -736,21 +736,21 @@ efr = gas_power / total_power
 
 已有机器基准为：
 
-\[
+$$
 P_{\mathrm{total}}=1.9868004353\times10^{-15},
-\]
+$$
 
-\[
+$$
 P_{\mathrm{gas}}=2.0325067012\times10^{-16}.
-\]
+$$
 
 所以：
 
-\[
+$$
 \mathrm{EFR}
 =\frac{P_{\mathrm{gas}}}{P_{\mathrm{total}}}
 =0.1023005\approx10.23\%.
-\]
+$$
 
 本征模的绝对幅值可以采用任意归一化，因此这两个功率写成任意单位；场整体缩放时，
 分子和分母会同时乘以相同因子，EFR比值不变。该`0.1023005`是已有机器基准，不是
@@ -773,29 +773,29 @@ P_{\mathrm{gas}}=2.0325067012\times10^{-16}.
 
 正常 guided mode 外部场可以：
 
-\[
+$$
 E\sim e^{-\kappa r_\perp}
-\]
+$$
 
 存在明显 evanescent tail。
 
 但：
 
-\[
+$$
 \boxed{\text{Evanescent field 大}\neq\text{光正在大量漏掉}}
-\]
+$$
 
 我们真正想要的是：
 
-\[
+$$
 \boxed{\text{大的、但仍然是 evanescent 的气体区场}}
-\]
+$$
 
 而不是：
 
-\[
+$$
 \boxed{\text{radiation / substrate leakage}}
-\]
+$$
 
 ---
 
@@ -873,24 +873,24 @@ neff、模场和EFR是否稳定，避免把窗口截断误差当作结构效应�
 ## 16. 重要的 5 句话
 
 1.  
-\[
+$$
 \boxed{\text{FDE 求的是整个横截面的 Maxwell 本征解}}
-\]
+$$
 
 2.  
-\[
+$$
 \boxed{\text{trial modes = 4 不代表波导有 4 个真正导模}}
-\]
+$$
 
 3.  
-\[
+$$
 \boxed{\text{mode 1–4 是数值排序，不是永久物理身份}}
-\]
+$$
 
 4.  
-\[
+$$
 \boxed{\text{真正的模式识别要看场分布 + }n_{\rm eff}\text{ + 偏振 + 节点}}
-\]
+$$
 
 5. 当前单点mode1已通过`neff + TE fraction + 核心局域模场`与U01机器基准对账；
    `Ex`图用于进一步检查节点，而不是因为mode1编号本身可信。
